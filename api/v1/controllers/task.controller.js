@@ -91,20 +91,41 @@ module.exports.changeStatus = async (req, res) => {
 // [PATCH] /tasks/change-multi
 module.exports.changeMulti = async (req, res) => {
     try {
-        const {ids, key,value} = req.body;
-        
+        const {
+            ids,
+            key,
+            value
+        } = req.body;
+
         switch (key) {
             case "status":
                 await Task.updateMany({
-                    _id : {$in : ids},
-                },{
-                    status : value
+                    _id: {
+                        $in: ids
+                    },
+                }, {
+                    status: value
                 })
                 res.json({
                     code: 200,
                     message: "Cập nhật trạng thái thành công"
                 })
-                break;        
+                break;
+            case "delete":
+                await Task.updateMany({
+                    _id: {
+                        $in: ids
+                    },
+                }, {
+                    deleted: true,
+                    deletedAt: new Date(),
+                })
+                res.json({
+                    code: 200,
+                    message: "Xóa  thành công"
+                })
+                break;
+
             default:
                 res.json({
                     code: 400,
@@ -112,7 +133,7 @@ module.exports.changeMulti = async (req, res) => {
                 })
                 break;
         }
-        
+
     } catch (error) {
         res.json({
             code: 400,
@@ -128,11 +149,11 @@ module.exports.create = async (req, res) => {
         const task = new Task(req.body);
         const data = await task.save();
 
-        
+
         res.json({
             code: 200,
-            message: "Tạo thành công" ,
-            data : data ,
+            message: "Tạo thành công",
+            data: data,
         })
     } catch (error) {
         res.json({
@@ -140,4 +161,49 @@ module.exports.create = async (req, res) => {
             message: "không tồn tại!"
         })
     }
+};
+
+// [PATCH] /tasks/edit/:id
+module.exports.edit = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        await Task.updateOne({
+            _id: id
+        }, req.body)
+        res.json({
+            code: 200,
+            message: "Cập nhật  thành công"
+        })
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "không tồn tại!"
+        })
+    }
+
+};
+
+// [DELETE] /tasks/delete/:id
+module.exports.delete = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        await Task.updateOne({
+            _id: id
+        }, {
+            deleted: true,
+            deletedAt: new Date(),
+        })
+        res.json({
+            code: 200,
+            message: "Xóa  thành công"
+        })
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "không tồn tại!"
+        })
+    }
+
 };
