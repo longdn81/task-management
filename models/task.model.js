@@ -4,6 +4,7 @@ const taskSchema = new mongoose.Schema({
     title : String ,
     status : String ,
     content : String ,
+    createdBy : String ,
     timeStart : Date ,
     timeFinish : Date,
     deleted: {
